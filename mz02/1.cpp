@@ -119,7 +119,7 @@ const complex operator+(double d, complex c)
 
 const complex operator-(double d, complex c)
 {
-    return c - d;
+    return -(c - d);
 }
 
 const complex operator*(double d, complex c)
