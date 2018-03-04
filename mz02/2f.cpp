@@ -16,7 +16,7 @@ class complex_stack
     complex operator+() const;
     complex_stack operator~() const;
 
-    void add(const complex &c);
+    void add(complex c);
     void del();
 
     private:
@@ -34,7 +34,7 @@ complex_stack::complex_stack(size_t s)
         max_size = 16;
     }
     cur_size = 0;
-    elem = new complex[max_size];
+    elem = new complex[16];
 }
 
 complex_stack::complex_stack(const complex_stack &other)
@@ -49,7 +49,7 @@ complex_stack::complex_stack(const complex_stack &other)
 
 complex_stack::~complex_stack()
 {
-    delete [] elem;
+    delete elem;
 }
 
 size_t complex_stack::size() const
@@ -81,7 +81,7 @@ complex_stack complex_stack::operator~() const
     return new_stack;
 }
 
-void complex_stack::add(const complex &c)
+void complex_stack::add(complex c)
 {
     if (cur_size >= max_size) {
         max_size *= 2;
@@ -89,7 +89,7 @@ void complex_stack::add(const complex &c)
         for (size_t i = 0; i < cur_size; ++i) {
             new_mem[i] = elem[i];
         }
-        delete [] elem;
+        delete elem;
         elem = new_mem;
     }
     elem[cur_size++] = c;
@@ -97,9 +97,7 @@ void complex_stack::add(const complex &c)
 
 void complex_stack::del()
 {
-    if (cur_size > 0) {
-        --cur_size;
-    }
+    --cur_size;
 }
 
 }
