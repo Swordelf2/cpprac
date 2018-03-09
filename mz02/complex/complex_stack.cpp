@@ -1,36 +1,7 @@
+#include "complex_stack.h"
 #include <stdlib.h>
-#include <new>
 
 namespace numbers {
-
-enum
-{
-    STACK_INIT_SIZE = 16,
-    STACK_EXTEND_MUL = 2
-};
-
-class complex_stack
-{
-    public:
-    complex_stack(size_t init_size = 16);
-    complex_stack(const complex_stack &other);
-    ~complex_stack();
-
-    complex_stack& operator=(const complex_stack &other);
-    complex& operator[](int i) const;
-    friend complex_stack operator<<(complex_stack stack, const complex &c);
-    complex& operator+() const;
-    friend complex_stack operator~(complex_stack stack);
-
-    size_t size() const;
-
-    private:
-    complex *arr;
-    size_t cur_size;
-    size_t max_size;
-
-    void extend();
-};
 
 /* Main constructor */
 complex_stack::complex_stack(size_t init_size) : cur_size(0), max_size(init_size)
@@ -79,7 +50,7 @@ complex_stack operator<<(complex_stack stack, const complex &c)
     if (stack.cur_size >= stack.max_size) {
         stack.extend();
     }
-    new ((void *) (stack.arr + stack.cur_size)) complex(c);
+    new (stack.arr + stack.cur_size) complex(c);
     ++stack.cur_size;
     return stack;
 }
