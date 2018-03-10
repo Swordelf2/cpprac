@@ -1,22 +1,37 @@
 #include "complex_stack.h"
 #include <stdlib.h>
+#include <new>
 
 namespace numbers {
 
 /* Main constructor */
-complex_stack::complex_stack(size_t init_size) : cur_size(0), max_size(init_size)
+complex_stack::complex_stack(size_t init_size)
+    : cur_size(0), max_size(init_size)
 {
-    arr = (complex *) malloc(init_size * sizeof(complex));
+    if (init_size > 0) {
+        arr = (complex *) malloc(init_size * sizeof(*arr));
+    } else {
+        arr = nullptr;
+    }
 }
 
 /* Copy constructor */
 complex_stack::complex_stack(const complex_stack &other) :
     cur_size(other.cur_size), max_size(other.max_size)
 {
-    arr = (complex *) malloc(max_size * sizeof(complex));
-    for (size_t i = 0; i < cur_size; ++i) {
-        arr[i] = other.arr[i];
+    if (max_size > 0) {
+        arr = (complex *) malloc(max_size * sizeof(*arr));
+        std::copy(other.arr, other.arr + other.cur_size, arr);
+    } else {
+        arr = nullptr;
     }
+}
+
+/* Move constructor */
+complex_stack::complex_stack(complex_stack &&other)
+    : complex_stack()
+{
+    swap(*this, other);
 }
 
 /* Destructor */
@@ -25,18 +40,26 @@ complex_stack::~complex_stack()
     free(arr);
 }
 
-/* Assignment operator */
+/* Copy assignment operator */
 complex_stack& complex_stack::operator=(const complex_stack &other)
 {
-    if (this != &other) {
-        free(arr);
-        cur_size = other.cur_size;
-        max_size = other.max_size;
-        arr = (complex *) malloc(max_size * sizeof(complex));
-        for (size_t i = 0; i < cur_size; ++i) {
-            arr[i] = other.arr[i];
-        }
-    }
+    // Copy and swap
+    complex_stack copied_stack(other);
+    swap(*this, copied_stack);
+    return *this;
+}
+
+/* Move assignment operator */
+complex_stack& complex_stack::operator=(complex_stack &&other)
+{
+    // here should be an assertion for not self-assignment
+    free(arr);
+    arr = other.arr;
+    cur_size = other.cur_size;
+    max_size = other.max_size;
+
+    other.arr = nullptr;
+
     return *this;
 }
 
@@ -45,14 +68,20 @@ complex& complex_stack::operator[](int i) const
     return arr[i];
 }
 
-complex_stack operator<<(complex_stack stack, const complex &c)
+complex_stack operator<<(const complex_stack &stack, const complex &c)
 {
-    if (stack.cur_size >= stack.max_size) {
-        stack.extend();
+    return complex_stack(stack) << c;
+}
+
+complex_stack operator<<(complex_stack &&stack, const complex &c)
+{
+    complex_stack new_stack(std::move(stack));
+    if (new_stack.cur_size >= new_stack.max_size) {
+        new_stack.extend();
     }
-    new (stack.arr + stack.cur_size) complex(c);
-    ++stack.cur_size;
-    return stack;
+    new (new_stack.arr + new_stack.cur_size) complex(c);
+    ++new_stack.cur_size;
+    return new_stack;
 }
 
 complex& complex_stack::operator+() const
@@ -60,10 +89,16 @@ complex& complex_stack::operator+() const
     return arr[cur_size - 1];
 }
 
-complex_stack operator~(complex_stack stack)
+complex_stack operator~(const complex_stack &stack)
 {
-    --stack.cur_size;
-    return stack;
+    return ~(complex_stack(stack));
+}
+
+complex_stack operator~(complex_stack &&stack)
+{
+    complex_stack new_stack(std::move(stack));
+    --new_stack.cur_size;
+    return new_stack;
 }
 
 size_t complex_stack::size() const
@@ -73,7 +108,19 @@ size_t complex_stack::size() const
 
 void complex_stack::extend()
 {
-    arr = (complex *) realloc(arr, (max_size *= STACK_EXTEND_MUL) * sizeof(complex));
+    if (arr == nullptr) {
+        max_size = STACK_INIT_SIZE;
+        arr = (complex *) malloc(max_size * sizeof(*arr));
+    } else {
+        arr = (complex *) realloc(arr, (max_size *= STACK_EXTEND_MUL) * sizeof(*arr));
+    }
+}
+
+void swap(complex_stack &stack1, complex_stack &stack2)
+{
+    std::swap(stack1.arr, stack2.arr);
+    std::swap(stack1.cur_size, stack2.cur_size);
+    std::swap(stack1.max_size, stack2.max_size);
 }
 
 }
