@@ -19,7 +19,7 @@ enum Args
 
 enum
 {
-    OUTPUT_BUF_SIZE = 32
+    OUTPUT_BUF_SIZE = 128
 };
 
 inline complex GetPoint(const complex &center, double R, double angle);
