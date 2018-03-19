@@ -2,14 +2,11 @@
 #include <string>
 #include <algorithm>
 
-constexpr size_t DATA_SIZE = 4;
 constexpr int HEX_BASE = 16;
 constexpr int CHARS_IN_NUM = 8; // hexademical digits in one 32-bit number
 
 class Account
 {
-    private:
-    uint32_t data[DATA_SIZE];
     public:
     Account();
     Account(const Account &other);
@@ -18,6 +15,19 @@ class Account
 
     std::string to_string() const;
     const uint32_t *cdata() const;
+
+    operator bool() const;
+    friend bool operator<(const Account &acc1, const Account &acc2);
+    friend bool operator>(const Account &acc1, const Account &acc2);
+    friend bool operator<=(const Account &acc1, const Account &acc2);
+    friend bool operator>=(const Account &acc1, const Account &acc2);
+    friend bool operator==(const Account &acc1, const Account &acc2);
+    friend bool operator!=(const Account &acc1, const Account &acc2);
+
+    static constexpr size_t DATA_SIZE = 4;
+
+    private:
+    uint32_t data[DATA_SIZE];
 };
 
 Account::Account()
@@ -85,8 +95,7 @@ std::string Account::to_string() const
     if (i >= 0) {
         cnt += snprintf(result + cnt, sizeof(result) - cnt, "%x", data[i]);
     } else {
-        result[2] = '0';
-        ++cnt;
+        return std::string("0");
     }
     for (int j = i - 1; j >= 0; --j) {
         cnt += snprintf(result + cnt, sizeof(result) - cnt, "%08x", data[j]);
@@ -100,10 +109,32 @@ const uint32_t *Account::cdata() const
     return data;
 }
 
+Account::operator bool() const
+{
+    uint32_t result = 0x0u;
+    for (size_t i = 0; i < DATA_SIZE; ++i) {
+        result |= data[i];
+    }
+    return result;
+}
+
+bool operator<(const Account &acc1, const Account &acc2)
+{
+    for (size_t i = 0; i < Account::DATA_SIZE - 1; ++i) {
+        size_t j = Account::DATA_SIZE - 1 - i;
+        if (acc1.data[j] >= acc2.data[j]) {
+            return 0;
+        }
+    }
+    return acc1.data[0] < acc2.data[0];
+}
+
 int main()
 {
     std::string s;
     std::cin >> s;
-    Account acc(s);
-    std::cout << acc.to_string() << std::endl;
+    Account acc1(s);
+    std::cin >> s;
+    Account acc2(s);
+    std::cout << (acc1 < acc2) << std::endl;
 }
