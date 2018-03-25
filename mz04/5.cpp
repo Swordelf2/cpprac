@@ -12,7 +12,10 @@ void selection_sort(Iter first, Iter last, F f = F())
             }
         }
         if (min_ind != i) {
-            std::swap(*(first + i), *(first + min_ind));
+            // swap values
+            typename Iter::value_type t = *(first + i);
+            *(first + i) = *(first + min_ind);
+            *(first + min_ind) = t;
         }
     }
 }
