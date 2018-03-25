@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <ctype.h>
 
 constexpr int HEX_BASE = 16;
@@ -109,7 +108,6 @@ Account::operator bool() const
     return result;
 }
 
-/*
 int cmp(const Account &acc1, const Account &acc2)
 {
     for (size_t i = 0; i < Account::DATA_SIZE; ++i) {
@@ -122,52 +120,6 @@ int cmp(const Account &acc1, const Account &acc2)
     }
     return 0;
 }
-*/
-
-int cmp(const Account &acc1, const Account &acc2)
-{
-    int result = 0;
-    for (size_t i = 0; i < Account::DATA_SIZE; ++i) {
-        size_t j = Account::DATA_SIZE - 1 - i;
-        if (acc1.data[j] > acc2.data[j]) {
-            if (result == 0) {
-                result = 1;
-            }
-        } else if (acc1.data[j] < acc2.data[j]) {
-            if (result == 0) {
-                result = -1;
-            }
-        }
-    }
-    return result;
-    
-}
-/*
-int cmp(const Account &acc1, const Account &acc2)
-{
-    if (acc1.data[3] > acc2.data[3]) {
-        return 1;
-    } else if (acc1.data[3] < acc2.data[3]) {
-        return -1;
-    }
-    if (acc1.data[2] > acc2.data[2]) {
-        return 1;
-    } else if (acc1.data[2] < acc2.data[2]) {
-        return -1;
-    }
-    if (acc1.data[1] > acc2.data[1]) {
-        return 1;
-    } else if (acc1.data[1] < acc2.data[1]) {
-        return -1;
-    }
-    if (acc1.data[0] > acc2.data[0]) {
-        return 1;
-    } else if (acc1.data[0] < acc2.data[0]) {
-        return -1;
-    }
-    return 0;
-}
-*/
 
 bool operator<(const Account &acc1, const Account &acc2)
 {
@@ -233,27 +185,19 @@ uint32_t Account::chartou(char c)
 namespace std
 {
 
+// WRONG HASH
 template <>
 struct hash<Account>
 {
     size_t operator()(Account acc) const
     {
-        return acc.cdata()[0] ^ acc.cdata()[1] ^
-                acc.cdata()[2] ^ acc.cdata()[3];
+        size_t result = 0;
+        for (size_t i = 0; i < Account::DATA_SIZE; ++i) {
+            size_t ihash = (hash<uint32_t> {})(acc.cdata()[i]);
+            result ^= (ihash << i);
+        }
+        return result;
     }
 };
 
-}
-
-int main()
-{
-    bool val = false;
-    std::string s;
-    while (std::cin >> s) {
-        Account acc1(s);
-        std::cin >> s;
-        Account acc2(s);
-        val ^= cmp(acc1, acc2);
-    }
-    std::cout << val;
 }
