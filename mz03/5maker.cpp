@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+
 #include <string>
 #include <algorithm>
 
@@ -163,12 +165,18 @@ struct hash<Account>
 };
 
 }
+using namespace std;
 
 int main()
 {
-    std::string s;
-    while (std::cin >> s) {
-        Account acc1(s);
-        std::cout << acc1.to_string() << std::endl;
+    srand(time(NULL));
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; ++i) {
+        uint32_t d[4];
+        for (int j = 0; j < 4; ++j) {
+            d[j] = rand();
+        }
+        cout << ((Account) d).to_string() << endl;
     }
 }

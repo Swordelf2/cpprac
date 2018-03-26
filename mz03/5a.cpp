@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <ctype.h>
 
 constexpr int HEX_BASE = 16;
 constexpr int CHARS_IN_NUM = 8; // hexademical digits in one 32-bit number
@@ -28,6 +28,8 @@ public:
     static constexpr size_t DATA_SIZE = 4;
 
 private:
+    static inline uint32_t hextou(const char *s, size_t n);
+    static inline uint32_t chartou(char c);
     uint32_t data[DATA_SIZE];
 };
 
@@ -56,10 +58,10 @@ Account::Account(const std::string &s)
     size_t cur_ind = len; // the right-hand pointer to what is being read
     for (; i < DATA_SIZE && !finish_flag; ++i) {
         if (cur_ind - start > CHARS_IN_NUM) {
-            data[i] = stoul(s.substr(cur_ind - CHARS_IN_NUM, CHARS_IN_NUM), NULL, HEX_BASE);
+            data[i] = hextou(s.c_str() + cur_ind - CHARS_IN_NUM, CHARS_IN_NUM);
             cur_ind -= CHARS_IN_NUM;
         } else {
-            data[i] = stoul(s.substr(start, cur_ind - start), NULL, HEX_BASE);
+            data[i] = hextou(s.c_str() + start, cur_ind - start);
             finish_flag = true;
         }
     }
@@ -149,26 +151,53 @@ bool operator!=(const Account &acc1, const Account &acc2)
     return cmp(acc1, acc2) != 0;
 }
 
+// 1 <= n <= 8
+uint32_t Account::hextou(const char *s, size_t n)
+{
+    uint32_t result = 0x0;
+    int i = n -2;
+    int cnt = 0;
+    for (; i >= 0; i -= 2, ++cnt) {
+        uint32_t byte = (chartou(s[i]) << 4) + chartou(s[i + 1]);
+        result |= (byte << cnt * 8);
+    }
+    if (i == -1) {
+        result |= (chartou(s[0]) << cnt * 8);
+    }
+    return result;
+}
+
+// from hex char
+uint32_t Account::chartou(char c)
+{
+    if (isdigit(c)) {
+        return c - '0';
+    } else {
+        if (islower(c)) {
+            return c - 'a' + 10;
+        } else {
+            return c - 'A' + 10;
+        }
+    }
+}
+
+
 namespace std
 {
 
+// WRONG HASH
 template <>
 struct hash<Account>
 {
     size_t operator()(Account acc) const
     {
-        return acc.cdata()[0] ^ acc.cdata()[1] ^
-                acc.cdata()[2] ^ acc.cdata()[3];
+        size_t result = 0;
+        for (size_t i = 0; i < Account::DATA_SIZE; ++i) {
+            size_t ihash = (hash<uint32_t> {})(acc.cdata()[i]);
+            result ^= (ihash << i);
+        }
+        return result;
     }
 };
 
-}
-
-int main()
-{
-    std::string s;
-    while (std::cin >> s) {
-        Account acc1(s);
-        std::cout << acc1.to_string() << std::endl;
-    }
 }
