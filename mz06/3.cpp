@@ -15,34 +15,49 @@ public:
 
 private:
     FILE *f;
+    int *cnt;
 };
 
 FileWrapper::FileWrapper(const char *s)
 {
     f = fopen(s, "w+");
+    cnt = new int(1);
 }
 FileWrapper::~FileWrapper()
 {
-    fclose(f);
+    --(*cnt);
+    if (*cnt == 0) {
+        delete cnt;
+        fclose(f);
+    }
 }
 
-FileWrapper::FileWrapper(const FileWrapper &other) : f(other.f) {}
+FileWrapper::FileWrapper(const FileWrapper &other) : f(other.f)
+{
+    cnt = other.cnt;
+    ++(*cnt);
+}
 
+    
 FileWrapper::FileWrapper(FileWrapper &&other) : f(other.f)
 {
-    other.f = NULL;
+    cnt = other.cnt;
+    ++(*cnt);
 }
 
 FileWrapper& FileWrapper::operator=(const FileWrapper &other)
 {
     f = other.f;
+    cnt = other.cnt;
+    ++(*cnt);
     return *this;
 }
 
 FileWrapper& FileWrapper::operator=(FileWrapper &&other)
 {
     f = other.f;
-    other.f = NULL;
+    cnt = other.cnt;
+    ++(*cnt);
     return *this;
 }
 
