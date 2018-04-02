@@ -21,12 +21,7 @@ void f(void)
 
 int main()
 {
-    try
-    {
+    try {
         f();
-    }
-    catch (int)
-    {
-        ;
-    }
+    } catch (int) {}
 }
