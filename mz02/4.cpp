@@ -9,7 +9,7 @@ namespace numbers {
 
 class complex
 {
-    public:
+public:
     complex();
     complex(const double &a, double _b = 0.0);
     explicit complex(const char *str);
@@ -30,16 +30,11 @@ class complex
     complex operator~() const;
     complex operator-() const;
 
-    private:
+private:
     double a;
     double b;
 };
 
-enum
-{
-    STACK_INIT_SIZE = 16,
-    STACK_EXTEND_MUL = 2
-};
 
 class complex_stack
 {
@@ -67,6 +62,8 @@ class complex_stack
     size_t cur_size;
     size_t max_size;
 
+    static constexpr int STACK_INIT_SIZE = 16,
+    static constexpr int STACK_EXTEND_MUL = 2
     void extend();
 };
 

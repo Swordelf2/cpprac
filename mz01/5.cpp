@@ -1,17 +1,14 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
-
-using namespace std;
-
 // b is the denominator
 class Rational
 {
-    public:
+public:
     Rational();
     Rational(int _a);
     Rational(int _a, int _b);
-    
+
     Rational &Add(Rational r2);
     Rational &Substract(Rational r2);
     Rational &Multiply(Rational r2);
@@ -20,24 +17,20 @@ class Rational
     bool EqualTo(Rational r2) const;
     int CompareTo(Rational r2) const;
     bool IsInteger() const;
-    string ToString() const;
+    std::string ToString() const;
 
 
-    private:
-    int a, b;
+private:
+    int a = 0;
+    int b = 1;
     void Reduce();
 };
 
-Rational::Rational()
-{
-    a = 0;
-    b = 1;
-}
+Rational::Rational() {}
 
 Rational::Rational(int _a)
 {
     a = _a;
-    b = 1;
 }
 
 Rational::Rational(int _a, int _b)
@@ -85,7 +78,7 @@ Rational &Rational::Add(Rational r2)
     Reduce();
     return *this;
 }
-    
+
 Rational &Rational::Substract(Rational r2)
 {
     r2.a = -r2.a;
@@ -127,10 +120,10 @@ bool Rational::IsInteger() const
     return b == 1;
 }
 
-string Rational::ToString() const
+std::string Rational::ToString() const
 {
     char s[100];
     snprintf(s, sizeof(s), "%d:%d", a, b);
-    string str = s;
+    std::string str = s;
     return str;
 }

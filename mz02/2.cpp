@@ -1,17 +1,13 @@
 #include <stdlib.h>
 #include <new>
 
-namespace numbers {
+// malloc, realloc and free are required for effecient placement new
 
-enum
-{
-    STACK_INIT_SIZE = 16,
-    STACK_EXTEND_MUL = 2
-};
+namespace numbers {
 
 class complex_stack
 {
-    public:
+public:
     complex_stack(size_t init_size = 0);
     complex_stack(const complex_stack &other);
     complex_stack(complex_stack &&other);
@@ -30,10 +26,13 @@ class complex_stack
 
     friend void swap(complex_stack &stack1, complex_stack &stack2);
 
-    private:
+private:
     complex *arr;
     size_t cur_size;
     size_t max_size;
+
+    static constexpr int STACK_INIT_SIZE = 16;
+    static constexpr int STACK_EXTEND_MUL = 2;
 
     void extend();
 };
