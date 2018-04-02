@@ -6,10 +6,13 @@
 
 using namespace std;
 
+constexpr double PERCENT_FIRST = 0.1;
+constexpr double PERCENT_SECOND = 0.1;
+constexpr int PRECISION = 10;
+
 struct Functor
 {
-    Functor() { sum = 0.0; };
-    double sum;
+    double sum = 0.0;
     void operator()(const double &d)
     {
         sum += d;
@@ -24,16 +27,17 @@ int main()
         v.push_back(a);
     }
 
-    // first and last 10%
-    auto nb = v.begin() + (size_t) (v.size() * 0.1f);
-    auto ne = v.end() - (size_t) (v.size() * 0.1f);
+    // first and last PERCENT_FIRST %
+    auto nb = v.begin() + (size_t) (v.size() * PERCENT_FIRST);
+    auto ne = v.end() - (size_t) (v.size() * PERCENT_FIRST);
 
-    // max and min 10%
+    // max and min PERCENT_SECOND %
     size_t ns = ne - nb;
     sort(nb, ne);
-    nb += (size_t) ns * 0.1f;
-    ne -= (size_t) ns * 0.1f;
-    
+    nb += (size_t) ns * PERCENT_SECOND;
+    ne -= (size_t) ns * PERCENT_SECOND;
+    ns = ne - nb;
+
     Functor f = for_each(nb, ne, Functor());
-    printf("%.10f\n", f.sum / ns);
+    cout << fixed << setprecision(PRECISION) << f.sum / ns << endl;
 }
