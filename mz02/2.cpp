@@ -2,13 +2,15 @@
 #include <new>
 
 // malloc, realloc and free are required for effecient placement new
+// aren't they ?
 
 namespace numbers {
 
 class complex_stack
 {
 public:
-    complex_stack(size_t init_size = 0);
+    complex_stack() {};
+    complex_stack(size_t init_size);
     complex_stack(const complex_stack &other);
     complex_stack(complex_stack &&other);
     ~complex_stack();
@@ -27,24 +29,22 @@ public:
     friend void swap(complex_stack &stack1, complex_stack &stack2);
 
 private:
-    complex *arr;
-    size_t cur_size;
-    size_t max_size;
-
     static constexpr int STACK_INIT_SIZE = 16;
     static constexpr int STACK_EXTEND_MUL = 2;
+
+    complex *arr = nullptr;
+    size_t cur_size = 0;
+    size_t max_size = 0;
 
     void extend();
 };
 
 /* Main constructor */
 complex_stack::complex_stack(size_t init_size)
-    : cur_size(0), max_size(init_size)
+    : max_size(init_size)
 {
     if (init_size > 0) {
         arr = (complex *) malloc(init_size * sizeof(*arr));
-    } else {
-        arr = nullptr;
     }
 }
 

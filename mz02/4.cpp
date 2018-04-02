@@ -10,8 +10,9 @@ namespace numbers {
 class complex
 {
 public:
-    complex();
-    complex(const double &a, double _b = 0.0);
+    complex() = default;
+    complex(double _a);
+    constexpr complex(double _a, double _b);
     explicit complex(const char *str);
     double get_re() const;
     double get_im() const;
@@ -19,7 +20,7 @@ public:
     double abs() const;
     void to_string(char *buf, size_t size) const;
 
-    friend complex operator+(const complex &c1, const complex &c2);
+    friend constexpr complex operator+(const complex &c1, const complex &c2);
     friend complex operator-(const complex &c1, const complex &c2);
     friend complex operator*(const complex &c1, const complex &c2);
     friend complex operator/(const complex &c1, const complex &c2);
@@ -31,8 +32,8 @@ public:
     complex operator-() const;
 
 private:
-    double a;
-    double b;
+    double a = 0.0;
+    double b = 0.0;
 };
 
 
@@ -58,12 +59,13 @@ class complex_stack
     friend void swap(complex_stack &stack1, complex_stack &stack2);
 
     private:
+    static constexpr int STACK_INIT_SIZE = 16;
+    static constexpr int STACK_EXTEND_MUL = 2;
+
     complex *arr;
     size_t cur_size;
     size_t max_size;
 
-    static constexpr int STACK_INIT_SIZE = 16,
-    static constexpr int STACK_EXTEND_MUL = 2
     void extend();
 };
 
@@ -82,16 +84,9 @@ enum
     BUF_SIZE = 64
 };
 
-complex::complex()
-{
-    a = b = 0.0;
-}
+complex::complex(double _a) : a(_a) {}
 
-complex::complex(const double &_a, double _b)
-{
-    a = _a;
-    b = _b;
-}
+constexpr complex::complex(double _a, double _b) : a(_a), b(_b) {}
 
 complex::complex(const char *str)
 {
@@ -123,10 +118,10 @@ void complex::to_string(char *buf, size_t size) const
     snprintf(buf, size, "(%.10g,%.10g)", a, b);
 }
 
-complex operator+(const complex &c1, const complex &c2)
+constexpr complex operator+(const complex &c1, const complex &c2)
 {
-    double resa = c1.get_re() + c2.get_re();
-    double resb = c1.get_im() + c2.get_im();
+    double resa = c1.a + c2.a;
+    double resb = c1.b + c2.b;
     complex res(resa, resb);
     return res;
 }
@@ -376,7 +371,7 @@ enum
     OUTPUT_BUF_SIZE = 128
 };
 
-inline complex GetPoint(const complex &center, double R, double angle);
+constexpr complex GetPoint(const complex &center, double R, double angle);
 
 int main(int argc, char **argv)
 {
@@ -403,10 +398,10 @@ int main(int argc, char **argv)
     std::cout << buf << std::endl;
 }
 
-complex GetPoint(const complex &center, double R, double angle)
+constexpr complex GetPoint(const complex &center, double R, double angle)
 {
     double cosine = cos(angle);
-    double sine;
+    double sine = 0.0;
     if (angle <= M_PI) {
         sine = sqrt(1 - cosine * cosine);
     } else {
