@@ -1,21 +1,24 @@
+#include <utility>
 #include <functional>
 
 template <typename Iter, typename F = std::less<typename Iter::value_type>>
 void selection_sort(Iter first, Iter last, F f = F())
 {
-    int n = last - first;
-    for (int i = 0; i < n - 1; ++i) {
-        int min_ind = i;
-        for (int j = i + 1; j < n; ++j) {
-            if (f(*(first + j), *(first + min_ind))) {
-                min_ind = j;
+    if (first == last) {
+        return;
+    }
+    for (Iter it = first; it < last - 1; ++it) {
+        Iter min_it = it;
+        for (Iter it_inner = it + 1; it_inner != last; ++it_inner) {
+            if (f(*it_inner, *min_it)) {
+                min_it = it_inner;
             }
         }
-        if (min_ind != i) {
-            // swap values
-            typename Iter::value_type t = *(first + i);
-            *(first + i) = *(first + min_ind);
-            *(first + min_ind) = t;
+        if (min_it != it) {
+            // swap values of min_it and it
+            typename Iter::value_type temp = std::move(*it);
+            *it = std::move(*min_it);
+            *min_it = std::move(temp);
         }
     }
 }

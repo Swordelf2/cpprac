@@ -25,10 +25,10 @@ int main()
     int n;
     map<string, int> m = {
         pair<string, int>("napoleon", 0),
-        pair<string,int>("loshad", 0),
-        pair<string,int>("balyk", 0),
-        pair<string,int>("zhir", 0),
-        pair<string,int>("grusha", 0) };
+        pair<string, int>("loshad", 0),
+        pair<string, int>("balyk", 0),
+        pair<string, int>("zhir", 0),
+        pair<string, int>("grusha", 0) };
     cin >> n;
     string s;
     int ov_count = 0;
@@ -43,7 +43,8 @@ int main()
         ++ov_count;
     }
 
-    vector<pair<string, int>> v(5);
+
+    vector<pair<string, int>> v(m.size());
     copy(m.begin(), m.end(), v.begin());
     for (auto it = v.begin(); it != v.end(); ++it) {
         it->second = percent(it->second, ov_count);
