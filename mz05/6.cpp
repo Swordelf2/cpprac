@@ -27,28 +27,28 @@ int main()
         char c;
         istrs >> c;
         switch (c) {
-            case 'C':
-                istrs >> s1;
-                f = Circle::make(s1);
-                break;
-            case 'S':
-                istrs >> s1;
-                f = Square::make(s1);
-                break;
-            case 'R':
-                istrs >> s1 >> s2;
-                f = Rectangle::make(s1 + " " + s2);
-                break;
-            default:
-                ;
+        case 'C':
+            istrs >> s1;
+            f = Circle::make(s1);
+            break;
+        case 'S':
+            istrs >> s1;
+            f = Square::make(s1);
+            break;
+        case 'R':
+            istrs >> s1 >> s2;
+            f = Rectangle::make(s1 + " " + s2);
+            break;
+        default:
+            ;
         }
         v.push_back(f);
     }
 
     stable_sort(v.begin(), v.end(), Cmpr());
-
-    for (auto it = v.begin(); it != v.end(); ++it) {
-        cout << (*it)->to_string() << endl;
-        delete *it;
+    
+    for (auto f_ptr : v) {
+        cout << f_ptr->to_string() << endl;
+        delete f_ptr;
     }
 }

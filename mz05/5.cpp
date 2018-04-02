@@ -3,8 +3,8 @@
 
 class Circle : public Figure
 {
-    double r;
-    public:
+    double r = 0.0;
+public:
     static Circle *make(const std::string &s)
     {
         Circle *c = new Circle();
@@ -19,8 +19,8 @@ class Circle : public Figure
 
 class Square : public Figure
 {
-    double a;
-    public:
+    double a = 0.0;
+public:
     static Square *make(const std::string &s)
     {
         Square *c = new Square();
@@ -35,8 +35,9 @@ class Square : public Figure
 
 class Rectangle : public Figure
 {
-    double a, b;
-    public:
+    double a = 0.0;
+    double b = 0.0;
+public:
     static Rectangle *make(const std::string &s)
     {
         Rectangle *c = new Rectangle();
