@@ -371,34 +371,34 @@ enum
     OUTPUT_BUF_SIZE = 128
 };
 
-constexpr complex GetPoint(const complex &center, double R, double angle);
+constexpr complex GetPoint(const complex &center, double r, double angle);
 
 int main(int argc, char **argv)
 {
     complex center(argv[ARG_CENTER]);
-    double R = strtod(argv[ARG_RADIUS], NULL);
-    unsigned long N = strtol(argv[ARG_N], NULL, 0);
+    double r = strtod(argv[ARG_RADIUS], NULL);
+    unsigned long n = strtol(argv[ARG_N], NULL, 0);
 
     char **expr = argv + ARG_FUNC;
 
-    complex I = 0;
-    complex prev_p = GetPoint(center, R, 0);
+    complex integral = 0;
+    complex prev_p = GetPoint(center, r, 0);
     double prev_angle = 0;
-    for (unsigned long i = 1; i <= N; ++i) {
-        double angle = 2.0 * M_PI * i / N;
-        complex p = GetPoint(center, R, angle);
-        complex val = eval(expr, GetPoint(center, R, (angle + prev_angle) * 0.5));
-        I = I + val * (p - prev_p);
+    for (unsigned long i = 1; i <= n; ++i) {
+        double angle = 2.0 * M_PI * i / n;
+        complex p = GetPoint(center, r, angle);
+        complex val = eval(expr, GetPoint(center, r, (angle + prev_angle) * 0.5));
+        integral = integral + val * (p - prev_p);
         prev_p = p;
         prev_angle = angle;
     }
 
     char buf[OUTPUT_BUF_SIZE];
-    I.to_string(buf, sizeof(buf));
+    integral.to_string(buf, sizeof(buf));
     std::cout << buf << std::endl;
 }
 
-constexpr complex GetPoint(const complex &center, double R, double angle)
+constexpr complex GetPoint(const complex &center, double r, double angle)
 {
     double cosine = cos(angle);
     double sine = 0.0;
@@ -407,5 +407,5 @@ constexpr complex GetPoint(const complex &center, double R, double angle)
     } else {
         sine = -sqrt(1 - cosine * cosine);
     }
-    return center + complex(R * cosine, R * sine);
+    return center + complex(r * cosine, r * sine);
 }

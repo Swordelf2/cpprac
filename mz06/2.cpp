@@ -10,15 +10,13 @@ void A(int m, int n)
 {
     if (m == 0) {
         throw Result(n + 1);
+    } else if (n == 0) {
+        A(m - 1, 1);
     } else {
-        if (n == 0) {
-            A(m - 1, 1);
-        } else {
-            try {
-                A(m, n - 1);
-            } catch (Result recRes) {
-                A(m - 1, recRes.res);
-            }
+        try {
+            A(m, n - 1);
+        } catch (Result recRes) {
+            A(m - 1, recRes.res);
         }
     }
 }
