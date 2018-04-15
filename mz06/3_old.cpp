@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <utility>
 
 class FileWrapper
 {
@@ -14,8 +13,6 @@ public:
 
     ~FileWrapper();
 
-    friend void swap(FileWrapper &fw1, FileWrapper &fw2);
-    friend int main();
 private:
     FILE *f;
     int *cnt;
@@ -29,40 +26,39 @@ FileWrapper::FileWrapper(const char *s)
 
 FileWrapper::~FileWrapper()
 {
-    if (cnt && f) {
-        --(*cnt);
-        if (*cnt == 0) {
-            delete cnt;
-            fclose(f);
-        }
+    --(*cnt);
+    if (*cnt == 0) {
+        delete cnt;
+        fclose(f);
     }
 }
 
-FileWrapper::FileWrapper(const FileWrapper &other) : f(other.f), cnt(other.cnt)
+FileWrapper::FileWrapper(const FileWrapper &other) : f(other.f)
 {
+    cnt = other.cnt;
     ++(*cnt);
 }
 
     
-FileWrapper::FileWrapper(FileWrapper &&other) : f(other.f), cnt(other.cnt)
+FileWrapper::FileWrapper(FileWrapper &&other) : f(other.f)
 {
-    if (this != &other) {
-        other.f = NULL;
-        other.cnt = nullptr;
-    }
+    cnt = other.cnt;
+    ++(*cnt);
 }
 
 FileWrapper& FileWrapper::operator=(const FileWrapper &other)
 {
-    FileWrapper copied(other);
-    swap(*this, copied);
+    f = other.f;
+    cnt = other.cnt;
+    ++(*cnt);
     return *this;
 }
 
 FileWrapper& FileWrapper::operator=(FileWrapper &&other)
 {
-    FileWrapper copied(std::move(other));
-    swap(*this, copied);
+    f = other.f;
+    cnt = other.cnt;
+    ++(*cnt);
     return *this;
 }
 
@@ -70,10 +66,4 @@ FileWrapper& FileWrapper::operator<<(char c)
 {
     fputc(c, f);
     return *this;
-}
-
-void swap(FileWrapper &fw1, FileWrapper &fw2)
-{
-    std::swap(fw1.f, fw2.f);
-    std::swap(fw1.cnt, fw2.cnt);
 }
