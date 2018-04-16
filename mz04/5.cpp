@@ -16,9 +16,7 @@ void selection_sort(Iter first, Iter last, F f = F())
         }
         if (min_it != it) {
             // swap values of min_it and it
-            typename Iter::value_type temp = std::move(*it);
-            *it = std::move(*min_it);
-            *min_it = std::move(temp);
+            std::swap(*min_it, *it);
         }
     }
 }

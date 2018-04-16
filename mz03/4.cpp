@@ -28,14 +28,14 @@ int main()
     }
 
     // first and last PERCENT_FIRST %
-    auto nb = v.begin() + (size_t) (v.size() * PERCENT_FIRST);
-    auto ne = v.end() - (size_t) (v.size() * PERCENT_FIRST);
+    auto nb = v.begin() + (v.size() * PERCENT_FIRST);
+    auto ne = v.end() - (v.size() * PERCENT_FIRST);
 
     // max and min PERCENT_SECOND %
     size_t ns = ne - nb;
     sort(nb, ne);
-    nb += (size_t) ns * PERCENT_SECOND;
-    ne -= (size_t) ns * PERCENT_SECOND;
+    nb += ns * PERCENT_SECOND;
+    ne -= ns * PERCENT_SECOND;
     ns = ne - nb;
 
     Functor f = for_each(nb, ne, Functor());

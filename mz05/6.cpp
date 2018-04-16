@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 
 using namespace std;
 
@@ -16,28 +17,26 @@ class Cmpr
     }
 };
 
+
 int main()
 {
     vector<Figure *> v;
     string s;
     while (getline(cin, s)) {
         Figure *f;
-        istringstream istrs(s);
-        string s1, s2;
-        char c;
-        istrs >> c;
+        size_t i = 0;
+        for (; isspace(s[i]); ++i) {}
+        char c = s[i];
+        s = s.substr(i + 1);
         switch (c) {
         case 'C':
-            istrs >> s1;
-            f = Circle::make(s1);
+            f = Circle::make(s);
             break;
         case 'S':
-            istrs >> s1;
-            f = Square::make(s1);
+            f = Square::make(s);
             break;
         case 'R':
-            istrs >> s1 >> s2;
-            f = Rectangle::make(s1 + " " + s2);
+            f = Rectangle::make(s);
             break;
         default:
             ;

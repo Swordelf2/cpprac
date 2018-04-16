@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <new>
 
-// malloc, realloc and free are required for effecient placement new
-// aren't they ?
-
 namespace numbers {
 
 class complex_stack
@@ -36,6 +33,7 @@ private:
     size_t cur_size = 0;
     size_t max_size = 0;
 
+    void destroy_all();
     void extend();
 };
 
@@ -44,7 +42,7 @@ complex_stack::complex_stack(size_t init_size)
     : max_size(init_size)
 {
     if (init_size > 0) {
-        arr = (complex *) malloc(init_size * sizeof(*arr));
+        arr = (complex *) ::operator new(init_size * sizeof(*arr));
     }
 }
 
@@ -53,8 +51,10 @@ complex_stack::complex_stack(const complex_stack &other) :
     cur_size(other.cur_size), max_size(other.max_size)
 {
     if (max_size > 0) {
-        arr = (complex *) malloc(max_size * sizeof(*arr));
-        std::copy(other.arr, other.arr + other.cur_size, arr);
+        arr = (complex *) ::operator new(max_size * sizeof(*arr));
+        for (size_t i = 0; i < cur_size; ++i) {
+            new (arr + i) complex(other.arr[i]);
+        }
     } else {
         arr = nullptr;
     }
@@ -70,7 +70,8 @@ complex_stack::complex_stack(complex_stack &&other)
 /* Destructor */
 complex_stack::~complex_stack()
 {
-    free(arr);
+    destroy_all();
+    ::operator delete(arr);
 }
 
 /* Copy assignment operator */
@@ -86,7 +87,9 @@ complex_stack& complex_stack::operator=(const complex_stack &other)
 complex_stack& complex_stack::operator=(complex_stack &&other)
 {
     // here should be an assertion for not self-assignment
-    free(arr);
+    destroy_all();
+    ::operator delete(arr);
+
     arr = other.arr;
     cur_size = other.cur_size;
     max_size = other.max_size;
@@ -130,7 +133,9 @@ complex_stack operator~(const complex_stack &stack)
 complex_stack operator~(complex_stack &&stack)
 {
     complex_stack new_stack(std::move(stack));
-    --new_stack.cur_size;
+    if (new_stack.cur_size > 0) {
+        --new_stack.cur_size;
+    }
     return new_stack;
 }
 
@@ -139,13 +144,27 @@ size_t complex_stack::size() const
     return cur_size;
 }
 
+void complex_stack::destroy_all()
+{
+    for (size_t i = 0; i < cur_size; ++i) {
+        arr[i].~complex();
+    }
+}
+
 void complex_stack::extend()
 {
     if (arr == nullptr) {
         max_size = STACK_INIT_SIZE;
-        arr = (complex *) malloc(max_size * sizeof(*arr));
+        arr = (complex *) ::operator new(max_size * sizeof(*arr));
     } else {
-        arr = (complex *) realloc(arr, (max_size *= STACK_EXTEND_MUL) * sizeof(*arr));
+        max_size *= STACK_EXTEND_MUL;
+        complex *new_arr = (complex *) ::operator new(max_size * sizeof(*arr));
+        for (size_t i = 0; i < cur_size; ++i) {
+            new (new_arr + i) complex(arr[i]);
+        }
+        destroy_all();
+        ::operator delete(arr);
+        arr = new_arr;
     }
 }
 

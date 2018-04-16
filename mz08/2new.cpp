@@ -23,7 +23,7 @@ int main()
             flag = true;
             // 01 seq cycle
             while (flag) {
-                if (!cin || isspace(c)) {
+                if (!cin || isspace(static_cast<unsigned char>(c))) {
                     // all good
                     break;
                 }
@@ -47,11 +47,11 @@ int main()
         }
         cout << flag << endl;
         // skip until spaces
-        while (cin && !isspace(c)) {
+        while (cin && !isspace(static_cast<unsigned char>(c))) {
             cin.get(c);
         }
         // skip spaces
-        while (cin && isspace(c)) {
+        while (cin && isspace(static_cast<unsigned char>(c))) {
             cin.get(c);
         }
     }
