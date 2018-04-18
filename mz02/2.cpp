@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <utility>
 #include <new>
 
 namespace numbers {
@@ -86,16 +87,8 @@ complex_stack& complex_stack::operator=(const complex_stack &other)
 /* Move assignment operator */
 complex_stack& complex_stack::operator=(complex_stack &&other)
 {
-    // here should be an assertion for not self-assignment
-    destroy_all();
-    ::operator delete(arr);
-
-    arr = other.arr;
-    cur_size = other.cur_size;
-    max_size = other.max_size;
-
-    other.arr = nullptr;
-
+    complex_stack moved_stack(std::move(other));
+    swap(*this, moved_stack);
     return *this;
 }
 

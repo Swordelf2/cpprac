@@ -366,10 +366,7 @@ enum Args
     ARG_FUNC = 4
 };
 
-enum
-{
-    OUTPUT_BUF_SIZE = 128
-};
+constexpr int OUTPUT_BUF_SIZE = 128;
 
 constexpr complex GetPoint(const complex &center, double r, double angle);
 

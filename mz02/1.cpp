@@ -33,15 +33,9 @@ private:
     double b = 0.0;
 };
 
-complex::complex()
-{
-}
+complex::complex() {}
 
-complex::complex(const double &_a, double _b)
-{
-    a = _a;
-    b = _b;
-}
+complex::complex(const double &_a, double _b) : a(_a), b(_b) {}
 
 complex::complex(const char *str)
 {
