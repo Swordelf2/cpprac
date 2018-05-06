@@ -26,17 +26,13 @@ quadratic(std::array<std::complex<T>, 3> v)
             return {true, vec};
         }
     } else {
-        std::complex<T> D = v[1] * v[1] - (T) 4.0L * v[2] * v[0];
-        if (norm(D) < EPS) {
-            vec.push_back(-v[1] / ((T) 2.0 * v[2]));
-            vec.push_back(vec[0]);
-            return {true, vec};
-        } else {
-            std::complex<T> sd = std::sqrt(D);
-            vec.push_back((-v[1] + sd) / ((T) 2.0L * v[2]));
-            vec.push_back((-v[1] - sd) / ((T) 2.0L * v[2]));
-            return {true, vec};
-        }
+        constexpr auto c_4 = static_cast<T>(4.0l);
+        constexpr auto c_2 = static_cast<T>(2.0l);
+        std::complex<T> D = v[1] * v[1] - c_4 * v[2] * v[0];
+        std::complex<T> sd = std::sqrt(D);
+        vec.push_back((-v[1] + sd) / (c_2 * v[2]));
+        vec.push_back((-v[1] - sd) / (c_2 * v[2]));
+        return {true, vec};
     }
 }
 

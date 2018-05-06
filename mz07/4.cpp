@@ -98,7 +98,7 @@ BuiltinSignedT ReadFromString(std::string s)
             throw std::invalid_argument("Conversion failed");
         }
         result = Convert<BuiltinSignedT>(val);
-    } catch (std::out_of_range) {
+    } catch (std::out_of_range&) {
         throw std::range_error("Read failed");
     }
     return result;
@@ -116,13 +116,17 @@ SignedT Add(SignedT a, SignedT b)
     if constexpr (std::is_signed<SignedT>::value) {
         std::overflow_error o_err("Addition overflow");
         long long add_res;
+        // We perform an operation on long long values
+        // and then convert them into SignedT type
+        // the overflow happens if either the operation
+        // on long long would overflow, or if the conversion does
         if (__builtin_saddll_overflow(a, b, &add_res)) {
             throw o_err;
         }
         SignedT res;
         try {
             res = Convert<SignedT>(add_res);
-        } catch (std::out_of_range) {
+        } catch (std::out_of_range&) {
             throw o_err;
         }
         return res;
@@ -143,7 +147,7 @@ SignedT Sub(SignedT a, SignedT b)
         SignedT res;
         try {
             res = Convert<SignedT>(sub_res);
-        } catch (std::out_of_range) {
+        } catch (std::out_of_range&) {
             throw o_err;
         }
         return res;
@@ -164,7 +168,7 @@ SignedT Mul(SignedT a, SignedT b)
         SignedT res;
         try {
             res = Convert<SignedT>(mul_res);
-        } catch (std::out_of_range) {
+        } catch (std::out_of_range&) {
             throw o_err;
         }
         return res;

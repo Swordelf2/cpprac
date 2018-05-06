@@ -1,7 +1,15 @@
 template <typename Iter>
 void myreverse(Iter first, Iter last)
 {
-    auto i = first, j = last;
-    for (; i < j - 1; ++i) {
-
+    if (first == last) {
+        return;
+    }
+    --last;
+    while (first < last) {
+        auto t = *first;
+        *first = *last;
+        *last = t;
+        ++first;
+        --last;
+    }
 }

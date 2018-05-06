@@ -7,18 +7,17 @@ void process(std::vector<int> &v)
         return;
     }
 
-    auto it = v.begin() + 1;
-    size_t cnt = 0;
-    while (it < v.end()) {
-        *(v.begin() + (it - v.begin() - 1) / 2) = std::move(*it);
-        ++cnt;
-        if (it < v.end() - 2) {
-            it += 2;
-        } else {
-            it = v.end();
+    auto it_from = v.begin() + 1;
+    auto it_to = v.begin();
+    while (it_from < v.end()) {
+        *it_to = std::move(*it_from);
+        ++it_to;
+        if (it_from >= v.end() - 2) {
+            break;
         }
+        it_from += 2;
     }
-    v.resize(cnt);
+    v.resize(it_to - v.begin());
 
     for (auto it = v.rbegin(); it != v.rend(); ++it) {
         std::cout << *it << ' ';
