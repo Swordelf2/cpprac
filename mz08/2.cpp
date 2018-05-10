@@ -1,41 +1,66 @@
 #include <iostream>
-#include <string>
+#include <ctype.h>
 
 using namespace std;
 
-int main()
+int IsInLanguage()
 {
-    string s;
-    while (cin >> s) {
-        auto it = s.begin();
-        int c0 = 0, c1 = 0;
-        while (it != s.end() && *it == '0') {
-            ++it;
-            ++c0;
-        }
-        while (it != s.end() && *it == '1') {
-            ++it;
-            ++c1;
-        }
-        bool flag = false;
-        if (c0 > 0 && c1 > 0) {
-            string u = s.substr(0, it - s.begin());
-            size_t len = u.length();
-            flag = true;
-            while (it != s.end()) {
-                auto new_pos = s.find(u, it - s.begin());
-                if (new_pos == s.npos || new_pos != (size_t) (it - s.begin())) {
+    char c;
+    // skip spaces
+    while (cin.get(c) && isspace(static_cast<unsigned char>(c))) {}
+
+    if (!cin) {
+        return -1;
+    }
+
+    int c0 = 0, c1 = 0;
+    while (cin && c == '0') {
+        ++c0;
+        cin.get(c);
+    }
+    while (cin && c == '1') {
+        ++c1;
+        cin.get(c);
+    }
+    bool flag = false;
+    if (c0 > 0 && c1 > 0) {
+        flag = true;
+        // 01 seq cycle
+        while (flag) {
+            if (!cin || isspace(static_cast<unsigned char>(c))) {
+                // all good
+                break;
+            }
+            
+            for (int i = 0; i < c0; ++i) {
+
+                if (!(cin && c == '0')) {
                     flag = false;
                     break;
                 }
-                if (it + len <= s.end()) {
-                    it += len;
-                } else {
+                cin.get(c);
+            }
+            for (int i = 0; i < c1; ++i) {
+                if (!(cin && c == '1')) {
                     flag = false;
                     break;
                 }
+                cin.get(c);
             }
         }
-        cout << flag << endl;
+    }
+    // skip until spaces or eof
+    while (cin && !isspace(static_cast<unsigned char>(c))) {
+        cin.get(c);
+    }
+    return flag;
+}
+
+int main()
+{
+    int result;
+    while ((result = IsInLanguage()) != -1) {
+        cout << result << endl;
     }
 }
+
