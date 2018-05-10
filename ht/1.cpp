@@ -25,15 +25,15 @@ void thread_func(int id)
 int main()
 {
     thread thr[THR_CNT];
-    for (int i = 0; i < THR_CNT; ++i) {
-        thr[i] = thread(thread_func, i);
+    for (thread &t : thr) {
+        t = thread(thread_func, &t - thr);
     }
-    for (int i = 0; i < THR_CNT; ++i) {
-        thr[i].join();
+    for (thread &t : thr) {
+        t.join();
     }
 
-    for (int i = 0; i < THR_CNT; ++i) {
-        printf("%.10g ", arr[i]);
+    for (const double &el : arr) {
+        printf("%.10g ", el);
     }
     putchar('\n');
 }
