@@ -5,51 +5,73 @@ using namespace std;
 
 enum State
 {
-    Q0 = 0x0, Q1, Q2, Q3, Q4, Q5, Q6, Q7,
-    Q8, // good exit
-    Q9, // bad exit
-    Q10, // final exit
+    Q000 = 0x0, Q001, Q010, Q011,
+    Q100, Q101, Q110, Q111,
 };
 
-constexpr unsigned BIT_MASK = 0x7;
-constexpr unsigned GOOD_BIT = 0x4;
+bool automatic(const string &s)
+{
+    enum State state = Q000;
+    for (const char &c : s) {
+        if (c == '0') {
+            switch (state) {
+            case Q000:
+            case Q100:
+                state = Q000;
+                break;
+            case Q001:
+            case Q101:
+                state = Q010;
+                break;
+            case Q010:
+            case Q110:
+                state = Q100;
+                break;
+            case Q011:
+            case Q111:
+                state = Q110;
+                break;
+            default:
+                ;
+            }
+        } else if (c == '1') {
+            switch (state) {
+            case Q000:
+            case Q100:
+                state = Q001;
+                break;
+            case Q001:
+            case Q101:
+                state = Q011;
+                break;
+            case Q010:
+            case Q110:
+                state = Q101;
+                break;
+            case Q011:
+            case Q111:
+                state = Q111;
+                break;
+            default:
+                ;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    if (state == Q100 || state == Q101 ||
+            state == Q110 || state == Q111) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 int main()
 {
     string s;
     while (cin >> s) {
-        enum State state = Q0;
-        
-        auto it = s.begin();
-        // exits are Q8 and Q9
-        while (state != Q10) {
-            // state dependency (exit states)
-            if (state == Q8) {
-                cout << 1 << endl;
-                state = Q10;
-            } else if (state == Q9) {
-                cout << 0 << endl;
-                state = Q10;
-            } else {
-                // input dependency case 1
-                if (it == s.end()) {
-                    // state dependencies
-                    if (state & GOOD_BIT) {
-                        state = Q8;
-                    } else 
-                        state = Q9;
-                } else if (*it == '0' || *it == '1') {
-                // input dependency case 2
-                    // the new state is chosen based on current state
-                    unsigned state_bits = state;
-                    state_bits = ((state_bits << 1) & BIT_MASK) | (*it - '0');
-                    state = (State) state_bits;
-
-                } else {
-                    state = Q9;
-                }
-            }
-            ++it;
-        }
+        cout << automatic(s) << endl;
     }
 }

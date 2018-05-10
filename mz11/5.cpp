@@ -6,10 +6,8 @@
 
 using namespace std;
 
-vector<char> st;
-string result;
 
-void f()
+void f(vector<char> &st, string &result)
 {
     char op = st.back();
     st.pop_back();
@@ -19,19 +17,21 @@ void f()
     }
 
     result.push_back(')');
-    f();
+    f(st, result);
     result.push_back(op);
-    f();
+    f(st, result);
     result.push_back('(');
 }
 
 int main()
 {
+    vector<char> st;
+    string result;
     char c;
     while (cin >> c) {
         st.push_back(c);
     }
-    f();
+    f(st, result);
     reverse(result.begin(), result.end());
     cout << result << endl;
 }

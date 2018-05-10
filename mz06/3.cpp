@@ -17,38 +17,42 @@ public:
     friend void swap(FileWrapper &fw1, FileWrapper &fw2);
     friend int main();
 private:
-    FILE *f;
-    int *cnt;
+    struct SharedFile
+    {
+        FILE *f;
+        int cnt = 1;
+    };
+
+    SharedFile *sf;
 };
 
 FileWrapper::FileWrapper(const char *s)
 {
-    f = fopen(s, "w+");
-    cnt = new int(1);
+    sf = new SharedFile();
+    sf->f = fopen(s, "w+");
 }
 
 FileWrapper::~FileWrapper()
 {
-    if (cnt && f) {
-        --(*cnt);
-        if (*cnt == 0) {
-            delete cnt;
-            fclose(f);
+    if (sf) {
+        --sf->cnt;
+        if (sf->cnt == 0) {
+            fclose(sf->f);
+            delete sf;
         }
     }
 }
 
-FileWrapper::FileWrapper(const FileWrapper &other) : f(other.f), cnt(other.cnt)
+FileWrapper::FileWrapper(const FileWrapper &other) : sf(other.sf)
 {
-    ++(*cnt);
+    ++sf->cnt;
 }
 
     
-FileWrapper::FileWrapper(FileWrapper &&other) : f(other.f), cnt(other.cnt)
+FileWrapper::FileWrapper(FileWrapper &&other) : sf(other.sf)
 {
     if (this != &other) {
-        other.f = NULL;
-        other.cnt = nullptr;
+        other.sf = nullptr;
     }
 }
 
@@ -68,12 +72,11 @@ FileWrapper& FileWrapper::operator=(FileWrapper &&other)
 
 FileWrapper& FileWrapper::operator<<(char c)
 {
-    fputc(c, f);
+    fputc(c, sf->f);
     return *this;
 }
 
 void swap(FileWrapper &fw1, FileWrapper &fw2)
 {
-    std::swap(fw1.f, fw2.f);
-    std::swap(fw1.cnt, fw2.cnt);
+    std::swap(fw1.sf, fw2.sf);
 }
